@@ -15,4 +15,9 @@ include(Qt-Reversi.pri)
 
 HEADERS +=
 
+
+INCLUDEPATH += /usr/local/Cellar/boost/1.63.0/include
+
+
+
 SOURCES +=

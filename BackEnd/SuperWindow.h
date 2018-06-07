@@ -12,7 +12,7 @@
 #include "Piece.h"
 #include "othello/OthelloState.hpp"
 #include "othello/naive.hpp"
-#include "othello/eva.hpp"
+#include "othello/cooper.hpp"
 #include <iostream>
 #include <cstdio>
 #include <stdio.h>
@@ -26,7 +26,7 @@ typedef QVector< QVector< QVector<Type> > > BACKUP;
 typedef enum {
     HUMAN,
     NAIVE,
-    EVA,
+    COOPER,
 } PlayerType;
 
 namespace Ui {

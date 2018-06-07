@@ -20,10 +20,11 @@ SuperWindow::SuperWindow(QWidget *parent) :
 
     ui->BlackAI->addItem("human", HUMAN);
     ui->BlackAI->addItem("naive", NAIVE);
-    ui->BlackAI->addItem("eva", EVA);
+    ui->BlackAI->addItem("cooper", COOPER);
+
     ui->WhiteAI->addItem("human", HUMAN);
     ui->WhiteAI->addItem("naive", NAIVE);
-    ui->WhiteAI->addItem("eva", EVA);
+    ui->WhiteAI->addItem("cooper", COOPER);
 
     /* Pieces[PieceSize][PieceSize] */
     Pieces.resize(PieceSize);
@@ -256,7 +257,7 @@ void SuperWindow::saveResult() {
     bp = (PlayerType)(ui->BlackAI->currentIndex());
     wp = (PlayerType)(ui->WhiteAI->currentIndex());
     
-    string ai_names[5] = {"human", "naive", "eva"};
+    string ai_names[5] = {"human", "naive", "cooper"};
     int x = 0, y = 0, z = 0;
     string filename = ai_names[bp]+" vs "+ai_names[wp]+".txt";
     
@@ -350,7 +351,7 @@ void SuperWindow::DropThisPiece(int row, int column)
         PII m;
         clock_t start_time;
         start_time = clock();
-        int time_limit = 2;
+        int time_limit = 1;
         m = naive::step(state, start_time, time_limit);
     }
 
@@ -415,13 +416,13 @@ void SuperWindow::AI()
     
     clock_t start_time;
     start_time = clock();
-    int time_limit = 5;
+    int time_limit = 1;
 
     if(pt == NAIVE) {
         m = naive::step(state, start_time, time_limit);
     }
-    else if(pt == EVA) {
-        m = eva::step(state, start_time, time_limit);
+    else if(pt == COOPER) {
+        m = cooper::step(state, start_time, time_limit);
     }
     else {
         return;

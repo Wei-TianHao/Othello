@@ -2,7 +2,7 @@
 #include<ctime>
 #include "OthelloState.hpp"
 #include "naive.hpp"
-#include "eva.hpp"
+#include "cooper.hpp"
 
 using namespace std;
 #define ULL unsigned long long
@@ -40,8 +40,8 @@ int main(int argc,char **argv) {
     if(version == "naive") {
         m = naive::step(state, start_time, time_limit);
     }
-    else if(version == "eva") {
-        m = eva::step(state, start_time, time_limit);
+    else if(version == "cooper") {
+        m = cooper::step(state, start_time, time_limit);
 
     }
     // state.DoMove(m.first, m.second);

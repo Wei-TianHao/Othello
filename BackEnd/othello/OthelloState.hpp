@@ -132,12 +132,14 @@ public:
     bool is_end() {
         unordered_set<PII, pair_hash> xy;
         GetAllMoves(xy);
+        bool ret = true;
         if(xy.size() > 0) return false;
+
         last_player = !last_player;
         GetAllMoves(xy);
-        if(xy.size() > 0) return false;
+        if(xy.size() > 0) ret = false;
         last_player = !last_player;
-        return true;
+        return ret;
     }
     bool DoMove(int x, int y) {
 

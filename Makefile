@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/usr/bin/g++
 DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -F/usr/local/Cellar/qt/5.9.1/lib
+INCPATH       = -I. -I/usr/local/Cellar/boost/1.63.0/include -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -F/usr/local/Cellar/qt/5.9.1/lib
 QMAKE         = /usr/local/Cellar/qt/5.9.1/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -55,7 +55,8 @@ SOURCES       = BackEnd/othello/eva.cc \
 		BackEnd/othello/OthelloState.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
-		BackEnd/SuperWindow.cpp qrc_image.cpp \
+		BackEnd/SuperWindow.cpp \
+		BackEnd/othello/cooper.cc qrc_image.cpp \
 		moc_Piece.cpp \
 		moc_SuperWindow.cpp
 OBJECTS       = eva.o \
@@ -64,6 +65,7 @@ OBJECTS       = eva.o \
 		main.o \
 		Piece.o \
 		SuperWindow.o \
+		cooper.o \
 		qrc_image.o \
 		moc_Piece.o \
 		moc_SuperWindow.o
@@ -256,16 +258,15 @@ DIST          = /usr/local/Cellar/qt/5.9.1/mkspecs/features/spec_pre.prf \
 		Qt-Reversi.pro BackEnd/othello/eva.hpp \
 		BackEnd/othello/naive.hpp \
 		BackEnd/othello/OthelloState.hpp \
-		BackEnd/AIControl.hpp \
 		BackEnd/Piece.h \
 		BackEnd/SuperWindow.h \
-		../../../../Downloads/RNG-master/rng.h \
-		BackEnd/othello/rng.h BackEnd/othello/eva.cc \
+		BackEnd/othello/cooper.hpp BackEnd/othello/eva.cc \
 		BackEnd/othello/naive.cc \
 		BackEnd/othello/OthelloState.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
-		BackEnd/SuperWindow.cpp
+		BackEnd/SuperWindow.cpp \
+		BackEnd/othello/cooper.cc
 QMAKE_TARGET  = Qt-Reversi
 DESTDIR       = 
 TARGET        = Qt-Reversi.app/Contents/MacOS/Qt-Reversi
@@ -697,8 +698,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents Images/image.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/5.9.1/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/eva.hpp BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/AIControl.hpp BackEnd/Piece.h BackEnd/SuperWindow.h ../../../../Downloads/RNG-master/rng.h BackEnd/othello/rng.h $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/eva.cc BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/eva.hpp BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/Piece.h BackEnd/SuperWindow.h BackEnd/othello/cooper.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/eva.cc BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp BackEnd/othello/cooper.cc $(DISTDIR)/
 	$(COPY_FILE) --parents FrontEnd/SuperWindow.ui $(DISTDIR)/
 
 
@@ -749,7 +750,7 @@ moc_Piece.cpp: /usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/QPushB
 		BackEnd/Piece.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/5.9.1/bin/moc
-	/usr/local/Cellar/qt/5.9.1/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -I/Users/wth/Desktop/course/ai/Qt-Othello -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include -F/usr/local/Cellar/qt/5.9.1/lib BackEnd/Piece.h -o moc_Piece.cpp
+	/usr/local/Cellar/qt/5.9.1/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -I/Users/wth/Desktop/course/ai/Qt-Othello -I/usr/local/Cellar/boost/1.63.0/include -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include -F/usr/local/Cellar/qt/5.9.1/lib BackEnd/Piece.h -o moc_Piece.cpp
 
 moc_SuperWindow.cpp: /usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/qmainwindow.h \
@@ -774,11 +775,177 @@ moc_SuperWindow.cpp: /usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/othello/rng.h \
 		BackEnd/othello/naive.hpp \
-		BackEnd/othello/eva.hpp \
+		BackEnd/othello/cooper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/user.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_compiler_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/nvcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc_xml.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/common_edg.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/comeau.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pathscale.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/intel.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/visualc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/clang.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/digitalmars.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/kai.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sgi_mipspro.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/compaq_cxx.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/greenhills.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/codegear.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/borland.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/metrowerks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sunpro_cc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/hp_acc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/mpw.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_stdlib_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/stlport.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcomo.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/utility.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/roguewave.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libstdcpp3.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/sgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/msl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/posix_features.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/modena.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/dinkumware.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_platform_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/linux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/bsd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/solaris.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/irix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/hpux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cygwin.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/win32.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/beos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/macos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/aix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/amigaos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/qnxnto.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vxworks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/symbian.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vms.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/suffix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/workaround.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/hash_float.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/float_functions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/cmath.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/utility/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/core/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer/static_log2.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/cstdint.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/current_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_enum.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/intrinsics.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/version.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_same.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/integral_constant.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_volatile.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_void.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_arithmetic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_integral.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_floating_point.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_convertible.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/yes_no_type.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_array.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_abstract.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/static_assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_class.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_union.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_scalar.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_function_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_impl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_cv.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_helper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_polymorphic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/declval.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/extensions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/container_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat_from_to.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/add.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/dec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/config/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/inc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/cat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/debug/error.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/dmc/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/expr_iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/adt.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/is_binary.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/check.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/compl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/eat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/dmc/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/expand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/overload.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/rem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_1.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/detail/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/identity.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/split.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/reverse.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bitand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/edg/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bool.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/msvc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/dmc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/sub.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
 		BackEnd/SuperWindow.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/5.9.1/bin/moc
-	/usr/local/Cellar/qt/5.9.1/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -I/Users/wth/Desktop/course/ai/Qt-Othello -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include -F/usr/local/Cellar/qt/5.9.1/lib BackEnd/SuperWindow.h -o moc_SuperWindow.cpp
+	/usr/local/Cellar/qt/5.9.1/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/local/Cellar/qt/5.9.1/mkspecs/macx-g++ -I/Users/wth/Desktop/course/ai/Qt-Othello -I/usr/local/Cellar/boost/1.63.0/include -I/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.9.1/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include -F/usr/local/Cellar/qt/5.9.1/lib BackEnd/SuperWindow.h -o moc_SuperWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -838,7 +1005,173 @@ main.o: BackEnd/main.cpp BackEnd/SuperWindow.h \
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/othello/rng.h \
 		BackEnd/othello/naive.hpp \
-		BackEnd/othello/eva.hpp \
+		BackEnd/othello/cooper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/user.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_compiler_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/nvcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc_xml.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/common_edg.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/comeau.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pathscale.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/intel.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/visualc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/clang.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/digitalmars.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/kai.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sgi_mipspro.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/compaq_cxx.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/greenhills.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/codegear.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/borland.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/metrowerks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sunpro_cc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/hp_acc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/mpw.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_stdlib_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/stlport.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcomo.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/utility.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/roguewave.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libstdcpp3.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/sgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/msl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/posix_features.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/modena.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/dinkumware.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_platform_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/linux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/bsd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/solaris.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/irix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/hpux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cygwin.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/win32.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/beos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/macos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/aix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/amigaos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/qnxnto.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vxworks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/symbian.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vms.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/suffix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/workaround.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/hash_float.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/float_functions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/cmath.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/utility/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/core/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer/static_log2.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/cstdint.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/current_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_enum.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/intrinsics.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/version.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_same.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/integral_constant.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_volatile.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_void.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_arithmetic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_integral.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_floating_point.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_convertible.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/yes_no_type.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_array.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_abstract.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/static_assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_class.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_union.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_scalar.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_function_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_impl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_cv.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_helper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_polymorphic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/declval.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/extensions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/container_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat_from_to.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/add.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/dec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/config/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/inc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/cat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/debug/error.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/dmc/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/expr_iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/adt.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/is_binary.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/check.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/compl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/eat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/dmc/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/expand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/overload.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/rem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_1.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/detail/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/identity.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/split.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/reverse.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bitand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/edg/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bool.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/msvc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/dmc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/sub.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
 		/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/QApplication \
 		/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o BackEnd/main.cpp
@@ -874,9 +1207,346 @@ SuperWindow.o: BackEnd/SuperWindow.cpp BackEnd/SuperWindow.h \
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/othello/rng.h \
 		BackEnd/othello/naive.hpp \
-		BackEnd/othello/eva.hpp \
+		BackEnd/othello/cooper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/user.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_compiler_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/nvcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc_xml.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/common_edg.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/comeau.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pathscale.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/intel.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/visualc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/clang.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/digitalmars.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/kai.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sgi_mipspro.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/compaq_cxx.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/greenhills.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/codegear.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/borland.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/metrowerks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sunpro_cc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/hp_acc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/mpw.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_stdlib_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/stlport.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcomo.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/utility.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/roguewave.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libstdcpp3.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/sgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/msl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/posix_features.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/modena.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/dinkumware.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_platform_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/linux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/bsd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/solaris.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/irix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/hpux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cygwin.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/win32.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/beos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/macos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/aix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/amigaos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/qnxnto.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vxworks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/symbian.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vms.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/suffix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/workaround.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/hash_float.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/float_functions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/cmath.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/utility/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/core/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer/static_log2.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/cstdint.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/current_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_enum.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/intrinsics.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/version.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_same.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/integral_constant.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_volatile.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_void.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_arithmetic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_integral.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_floating_point.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_convertible.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/yes_no_type.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_array.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_abstract.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/static_assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_class.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_union.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_scalar.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_function_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_impl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_cv.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_helper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_polymorphic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/declval.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/extensions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/container_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat_from_to.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/add.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/dec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/config/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/inc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/cat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/debug/error.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/dmc/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/expr_iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/adt.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/is_binary.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/check.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/compl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/eat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/dmc/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/expand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/overload.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/rem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_1.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/detail/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/identity.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/split.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/reverse.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bitand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/edg/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bool.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/msvc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/dmc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/sub.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
 		ui_SuperWindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SuperWindow.o BackEnd/SuperWindow.cpp
+
+cooper.o: BackEnd/othello/cooper.cc BackEnd/othello/cooper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/hash_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/user.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_compiler_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/nvcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc_xml.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/common_edg.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/comeau.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pathscale.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/intel.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/visualc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/gcc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/clang.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/digitalmars.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/kai.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sgi_mipspro.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/compaq_cxx.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/greenhills.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/codegear.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/borland.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/metrowerks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/sunpro_cc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/hp_acc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/mpw.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/compiler/pgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_stdlib_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/stlport.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcomo.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/utility.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/roguewave.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libcpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/libstdcpp3.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/sgi.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/msl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/posix_features.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/vacpp.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/modena.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/stdlib/dinkumware.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/select_platform_config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/linux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/bsd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/solaris.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/irix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/hpux.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cygwin.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/win32.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/beos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/macos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/aix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/amigaos.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/qnxnto.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vxworks.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/symbian.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/cray.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/platform/vms.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/suffix.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/workaround.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/hash_float.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/float_functions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/config/no_tr1/cmath.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/detail/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/limits.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/utility/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/core/enable_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer/static_log2.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/integer_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/cstdint.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/current_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_enum.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/intrinsics.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/version.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_same.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/integral_constant.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_volatile.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_void.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_arithmetic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_integral.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_floating_point.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_convertible.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/yes_no_type.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_array.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_abstract.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/static_assert.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_class.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_union.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_scalar.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_member_function_pointer.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_impl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_cv.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_mem_fun_pointer_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_function.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_helper.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/detail/is_function_ptr_tester.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/is_polymorphic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_lvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/add_rvalue_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/remove_reference.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/type_traits/declval.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/functional/hash/extensions.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/detail/container_fwd.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat_from_to.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/add.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/dec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/config/config.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/inc.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/cat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/debug/error.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/dmc/auto_rec.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/expr_iif.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/adt.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/is_binary.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/check.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/compl.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/eat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/dmc/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/expand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/overload.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/rem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_1.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/detail/is_empty.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/facilities/identity.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/detail/split.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/tuple/size.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/variadic/elem.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_left.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/edg/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/detail/fold_right.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/list/reverse.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bitand.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/edg/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/logical/bool.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/msvc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/dmc/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/control/detail/while.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/arithmetic/sub.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/repeat.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
+		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
+		BackEnd/othello/OthelloState.hpp \
+		BackEnd/othello/rng.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cooper.o BackEnd/othello/cooper.cc
 
 qrc_image.o: qrc_image.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_image.o qrc_image.cpp
