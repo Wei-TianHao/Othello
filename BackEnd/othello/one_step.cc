@@ -34,7 +34,7 @@ int main(int argc,char **argv) {
         last_player = false;
 
     OthelloState state = OthelloState(sz, emp, ply, last_player);
-    PII m;
+    int m;
     clock_t start_time = clock();
     int time_limit = 2;
     if(version == "naive") {
@@ -46,6 +46,6 @@ int main(int argc,char **argv) {
     }
     // state.DoMove(m.first, m.second);
     // state.ShowBoard();
-    printf("%d %d\n", m.first, m.second);
+    printf("%d %d\n", m / sz, m % sz);
     return 0;
 }

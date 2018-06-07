@@ -50,8 +50,7 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = BackEnd/othello/eva.cc \
-		BackEnd/othello/naive.cc \
+SOURCES       = BackEnd/othello/naive.cc \
 		BackEnd/othello/OthelloState.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
@@ -59,8 +58,7 @@ SOURCES       = BackEnd/othello/eva.cc \
 		BackEnd/othello/cooper.cc qrc_image.cpp \
 		moc_Piece.cpp \
 		moc_SuperWindow.cpp
-OBJECTS       = eva.o \
-		naive.o \
+OBJECTS       = naive.o \
 		OthelloState.o \
 		main.o \
 		Piece.o \
@@ -255,13 +253,11 @@ DIST          = /usr/local/Cellar/qt/5.9.1/mkspecs/features/spec_pre.prf \
 		/usr/local/Cellar/qt/5.9.1/mkspecs/features/exceptions.prf \
 		/usr/local/Cellar/qt/5.9.1/mkspecs/features/yacc.prf \
 		/usr/local/Cellar/qt/5.9.1/mkspecs/features/lex.prf \
-		Qt-Reversi.pro BackEnd/othello/eva.hpp \
-		BackEnd/othello/naive.hpp \
+		Qt-Reversi.pro BackEnd/othello/naive.hpp \
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/Piece.h \
 		BackEnd/SuperWindow.h \
-		BackEnd/othello/cooper.hpp BackEnd/othello/eva.cc \
-		BackEnd/othello/naive.cc \
+		BackEnd/othello/cooper.hpp BackEnd/othello/naive.cc \
 		BackEnd/othello/OthelloState.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
@@ -698,8 +694,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents Images/image.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/5.9.1/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/eva.hpp BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/Piece.h BackEnd/SuperWindow.h BackEnd/othello/cooper.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/eva.cc BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp BackEnd/othello/cooper.cc $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/Piece.h BackEnd/SuperWindow.h BackEnd/othello/cooper.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp BackEnd/othello/cooper.cc $(DISTDIR)/
 	$(COPY_FILE) --parents FrontEnd/SuperWindow.ui $(DISTDIR)/
 
 
@@ -967,11 +963,6 @@ compiler_lex_clean:
 compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
-
-eva.o: BackEnd/othello/eva.cc BackEnd/othello/eva.hpp \
-		BackEnd/othello/OthelloState.hpp \
-		BackEnd/othello/rng.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o eva.o BackEnd/othello/eva.cc
 
 naive.o: BackEnd/othello/naive.cc BackEnd/othello/naive.hpp \
 		BackEnd/othello/OthelloState.hpp \

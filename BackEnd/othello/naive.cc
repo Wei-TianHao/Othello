@@ -1,6 +1,6 @@
 #include "naive.hpp"
 
-PII naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
+int naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
     naive::Node root_node = naive::Node(root_state);
     int iter_cnt = 0;
     while((clock() - start_time)/ (double) CLOCKS_PER_SEC < sec) {
@@ -18,13 +18,13 @@ PII naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
             // cout << "expand" << endl;
             // Expand
             if (node->untried_moves.size() > 0) {
-                PII m = *(next(std::begin(node->untried_moves), rand()%(node->untried_moves.size())));
-                state.DoMove(m.first, m.second);
+                int m = *(next(std::begin(node->untried_moves), rand()%(node->untried_moves.size())));
+                state.DoMove(m);
                 node = node->AddChild(m, state);
             }
             // cout << "rollout" << endl;
             // Rollout
-            unordered_set<PII, pair_hash> moves;
+            set<int> moves;
 
             while(!state.is_end()) {
                 state.GetAllMoves(moves);
@@ -33,8 +33,8 @@ PII naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
                    
                     int x = rand()%moves.size();
                    
-                    PII m = *(next(std::begin(moves), x));
-                    state.DoMove(m.first, m.second);
+                    int m = *(next(std::begin(moves), x));
+                    state.DoMove(m);
                 }
                 else {
                     state.last_player = !state.last_player;
@@ -53,7 +53,7 @@ PII naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
     cout << "search times: " << iter_cnt << endl;
     naive::Node* ret = root_node.children[0];
     for(auto x:root_node.children) {
-        cout << "score: " << x->move.first << ' ' << x->move.second << ' ' << x->wins << ' ' << x->visits << ' '<< double(x->wins)/x->visits << endl;
+        cout << "score: " << x->move/8 << ' ' << x->move%8 << ' ' << x->wins << ' ' << x->visits << ' '<< double(x->wins)/x->visits << endl;
         if (x->wins/x->visits > ret->wins/ret->visits) {
             ret = x;
         }
@@ -61,14 +61,14 @@ PII naive::UCT(OthelloState root_state, clock_t start_time, int sec) {
     }
     return ret->move;
 }
-PII naive::step(OthelloState state, clock_t start_time, int sec) {
-    unordered_set<PII, pair_hash> moves;
+int naive::step(OthelloState state, clock_t start_time, int sec) {
+    set<int> moves;
     state.GetAllMoves(moves);
     if(moves.size() == 0) {
-        return make_pair(-1, -1);
+        return -1;
     }
     else{
-        PII m = naive::UCT(state, start_time, sec);
+        int m = naive::UCT(state, start_time, sec);
         return m;
     }
 }

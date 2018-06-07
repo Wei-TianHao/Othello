@@ -290,7 +290,7 @@ void SuperWindow::DropThisPiece(int row, int column)
     }
     else {
         cout << "move: " << row << " " << column << endl;
-        state.DoMove(row, column);
+        state.DoMove(row*PieceSize+column);
         BackUpState[totalMove] = state;
 
         if(Player == Black){
@@ -335,7 +335,7 @@ void SuperWindow::DropThisPiece(int row, int column)
     }
 
 
-    unordered_set<PII, pair_hash> moves;
+    set<int> moves;
     state.GetAllMoves(moves);
     std::cout << "nex valid moves: " << moves.size() << std::endl;
 
@@ -348,11 +348,11 @@ void SuperWindow::DropThisPiece(int row, int column)
         AI();
     }
     else {
-        PII m;
-        clock_t start_time;
-        start_time = clock();
-        int time_limit = 1;
-        m = naive::step(state, start_time, time_limit);
+//        int m;
+//        clock_t start_time;
+//        start_time = clock();
+//        int time_limit = 1;
+//        m = naive::step(state, start_time, time_limit);
     }
 
    
@@ -404,7 +404,7 @@ void SuperWindow::AI()
     int MaxRow = 0, MaxColumn = 0;
 
     state = BackUpState[totalMove];
-    pair<int, int> m = make_pair(-1, -1);
+    int m = -1;
     PlayerType pt, ept;
     if(Player == Black) {
         pt = (PlayerType)(ui->BlackAI->currentIndex());
@@ -416,7 +416,7 @@ void SuperWindow::AI()
     
     clock_t start_time;
     start_time = clock();
-    int time_limit = 1;
+    int time_limit = 60;
 
     if(pt == NAIVE) {
         m = naive::step(state, start_time, time_limit);
@@ -431,8 +431,8 @@ void SuperWindow::AI()
     TimeRecord->setHMS(0, (clock()-start_time)/(double)CLOCKS_PER_SEC/60, (clock()-start_time)/(double)CLOCKS_PER_SEC);
     ui->Timer->display(TimeRecord->toString("mm:ss"));
 
-    MaxRow = m.first;
-    MaxColumn = m.second;
+    MaxRow = m / PieceSize;
+    MaxColumn = m % PieceSize;
 
     if (MaxRow != -1) {
         for(int deltaY = -1; deltaY <= 1; deltaY++){

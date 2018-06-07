@@ -1,5 +1,4 @@
 SOURCES += \
-    $$PWD/BackEnd/othello/eva.cc \
     $$PWD/BackEnd/othello/naive.cc \
     $$PWD/BackEnd/othello/OthelloState.cc \
     $$PWD/BackEnd/main.cpp \
@@ -8,7 +7,6 @@ SOURCES += \
     $$PWD/BackEnd/othello/cooper.cc
 
 HEADERS  += \
-    $$PWD/BackEnd/othello/eva.hpp \
     $$PWD/BackEnd/othello/naive.hpp \
     $$PWD/BackEnd/othello/OthelloState.hpp \
     $$PWD/BackEnd/Piece.h \

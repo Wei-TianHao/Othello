@@ -1,6 +1,6 @@
 #include "cooper.hpp"
 
-PII cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
+int cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
     cooper::Node root_node = cooper::Node(root_state);
     int iter_cnt = 0;
     clock_t time_rec[10] = {0};
@@ -23,31 +23,46 @@ PII cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
             // Expand
             tmp = clock();
             if (node->untried_moves.size() > 0) {
-                PII m = *(next(std::begin(node->untried_moves), rand()%(node->untried_moves.size())));
-                state.DoMove(m.first, m.second);
+                int m = *(next(std::begin(node->untried_moves), rand()%(node->untried_moves.size())));
+                state.DoMove(m);
                 node = node->AddChild(m, state);
             }
             time_rec[1] += clock() - tmp;
             // cout << "rollout" << endl;
             // Rollout
             tmp = clock();
-            unordered_set<PII, pair_hash> moves;
-            while(!state.is_end()) {
+            set<int> moves;
+            clock_t tt = clock();
+            bool flag = !is_end(state);
+            time_rec[7] += clock() - tt;
+            while(flag) {
                 clock_t tt = clock();
                 get_all_moves(state, moves);
                 time_rec[5] += clock() - tt;
                 if (moves.size() > 0) {
-                    
+
                     clock_t tt = clock();
                     int x = rand()%moves.size();
+                    int m = *(next(std::begin(moves), x));
+                    state.DoMove(m);
                     time_rec[6] += clock() - tt;
-                    PII m = *(next(std::begin(moves), x));
-                    state.DoMove(m.first, m.second);
                 }
                 else {
-                    state.last_player = !state.last_player;
+//                    cout << "end? " << state.is_end() << endl;
+                    state.GetAllMoves(moves);
+//                    cout << "cnt1 " << moves.size() << endl;
+                    state.skip();
+                    state.GetAllMoves(moves);
+//                    cout << "cnt2 " << moves.size() << endl;
                 }
-                
+                tt = clock();
+                flag = !is_end(state);
+                time_rec[7] += clock() - tt;
+                if(!flag) {
+//                    cout <<"========= one round =========" << endl;
+
+                }
+
             }
             time_rec[2] += clock() - tmp;
             // cout << "Update" << endl;
@@ -68,22 +83,24 @@ PII cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
     cout << "search rounds: " << iter_cnt << endl;
     cooper::Node* ret = root_node.children[0];
     for(auto x:root_node.children) {
-        cout << "score: " << x->move.first << ' ' << x->move.second << ' ' << x->wins << ' ' << x->visits << ' '<< double(x->wins)/x->visits << endl;
+        cout << "score: " << x->move/8 << ' ' << x->move%8  << ' ' << x->wins << ' ' << x->visits << ' '<< double(x->wins)/x->visits << endl;
         if (x->wins/x->visits > ret->wins/ret->visits) {
             ret = x;
         }
-        
+
     }
+    cout << "move repeat: " << cooper::move_cnt << endl;
+    cout << "end repeat: " << cooper::end_cnt << endl;
     return ret->move;
 }
-PII cooper::step(OthelloState state, clock_t start_time, int sec) {
-    unordered_set<PII, pair_hash> moves;
+int cooper::step(OthelloState state, clock_t start_time, int sec) {
+    set<int> moves;
     get_all_moves(state, moves);
     if(moves.size() == 0) {
-        return make_pair(-1, -1);
+        return -1;
     }
     else{
-        PII m = cooper::UCT(state, start_time, sec);
+        int m = cooper::UCT(state, start_time, sec);
         return m;
     }
 }
@@ -105,17 +122,40 @@ double cooper::GetResult(OthelloState state) {
     return 0.5;
 }
 
-void cooper::get_all_moves(OthelloState &state, unordered_set<PII, pair_hash> &moves) {
-    state.GetAllMoves(moves);
-    return;
+
+bool cooper::is_end(OthelloState &state) {
     PULL key = make_pair(state.board_empty, state.board);
-    auto search = cooper::memory.find(key);
-    if(search != cooper::memory.end()) {
-        moves = search->second;
-        exit(0);
+    auto search = cooper::end_map.find(key);
+    if(search == cooper::end_map.end()) {
+        cooper::end_map[key] = state.is_end();
     }
     else {
+        end_cnt++;
+    }
+    return cooper::end_map[key];
+}
+
+
+void cooper::get_all_moves(OthelloState &state, set<int> &moves) {
+    state.GetAllMoves(moves);
+    return;
+
+    tuple<ULL,ULL,bool> key = tie(state.board_empty, state.board, state.last_player);
+//    cout << "searching... " << endl;
+    auto search = cooper::move_map.find(key);
+
+    if(search == cooper::move_map.end()) {
+//        cout << "adding... " << endl;
         state.GetAllMoves(moves);
-        cooper::memory[key] = moves;
+        cooper::move_map[key] = moves;
+//        cout << "size: " << cooper::move_map[key].size() << endl;
+
+    } else {
+//        cout << "======= found" << endl;
+        moves = cooper::move_map[key];
+//        cout << "======= size: " << moves.size() << endl;
+//        cout << state.board_empty << endl;
+        move_cnt ++;
+//        if(move_cnt > 3) exit(0);
     }
 }

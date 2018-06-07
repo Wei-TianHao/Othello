@@ -3,8 +3,8 @@
 #include<cstdio>
 #include<iostream>
 #include<algorithm>
+#include<set>
 #include<vector>
-#include<unordered_set>
 #include<ctime>
 #include "OthelloState.hpp"
 using namespace std;
@@ -19,9 +19,9 @@ public:
     double wins = 0;
     int visits = 0;
     double ucb_coe = 0.5;
-    unordered_set<PII, pair_hash> untried_moves;
-    PII move;
-    Node(OthelloState _state, PII _move = make_pair(-1,-1), Node* parent_node=NULL) {
+    set<int> untried_moves;
+    int move;
+    Node(OthelloState _state, int _move = -1, Node* parent_node=NULL) {
         parent = parent_node;
         state = _state;
         move = _move;
@@ -41,7 +41,7 @@ public:
         return ret;
     }
 
-    Node* AddChild(PII m, OthelloState _state) {
+    Node* AddChild(int m, OthelloState _state) {
         Node *n = new Node(_state, m, this);
         children.push_back(n);
         untried_moves.erase(m);
@@ -59,8 +59,8 @@ public:
 };
 
 
-PII UCT(OthelloState , clock_t, int);
-PII step(OthelloState, clock_t, int);
+int UCT(OthelloState , clock_t, int);
+int step(OthelloState, clock_t, int);
 double GetResult(OthelloState);
 
 }

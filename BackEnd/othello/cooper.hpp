@@ -3,8 +3,8 @@
 #include<cstdio>
 #include<iostream>
 #include<algorithm>
+#include<set>
 #include<vector>
-#include<unordered_set>
 #include<boost/functional/hash.hpp>
 #include<unordered_map>
 #include<ctime>
@@ -13,8 +13,10 @@ using namespace std;
 namespace cooper
 {
 
-static unordered_map<PULL, unordered_set<PII, pair_hash>, boost::hash<pair<ULL, ULL> > > memory;
-
+static unordered_map<tuple<ULL, ULL, bool>, set<int>, boost::hash<tuple<ULL, ULL, bool> > > move_map;
+static unordered_map<PULL, bool, boost::hash<pair<ULL, ULL> > > end_map;
+static int move_cnt = 0;
+static int end_cnt = 0;
 class Node {
 public:
     vector<Node*> children;
@@ -23,10 +25,10 @@ public:
     double wins = 0;
     int visits = 0;
     double ucb_coe = 0.5;
-    unordered_set<PII, pair_hash> untried_moves;
-    PII move;
+    set<int> untried_moves;
+    int move;
 
-    Node(OthelloState _state, PII _move = make_pair(-1,-1), Node* parent_node=NULL) {
+    Node(OthelloState _state, int _move = -1, Node* parent_node=NULL) {
         parent = parent_node;
         state = _state;
         move = _move;
@@ -46,7 +48,7 @@ public:
         return ret;
     }
 
-    Node* AddChild(PII m, OthelloState _state) {
+    Node* AddChild(int m, OthelloState _state) {
         Node *n = new Node(_state, m, this);
         children.push_back(n);
         untried_moves.erase(m);
@@ -64,10 +66,10 @@ public:
 };
 
 
-PII UCT(OthelloState , clock_t, int);
-PII step(OthelloState, clock_t, int);
+int UCT(OthelloState , clock_t, int);
+int step(OthelloState, clock_t, int);
 double GetResult(OthelloState);
-void get_all_moves(OthelloState&, unordered_set<PII, pair_hash>&);
-
+void get_all_moves(OthelloState&, set<int>&);
+bool is_end(OthelloState&);
 }
 #endif
