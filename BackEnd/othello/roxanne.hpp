@@ -6,6 +6,7 @@
 #include<set>
 #include<vector>
 #include<ctime>
+#include<unordered_map>
 #include <cstdint>
 #include <x86intrin.h>
 #include "OthelloState.hpp"

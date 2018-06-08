@@ -3,9 +3,10 @@
 int roxanne::UCT(OthelloState root_state, clock_t start_time, int sec) {
     roxanne::Node root_node = roxanne::Node(root_state);
     int iter_cnt = 0;
+    unordered_map<int, double> last_score;
     while((clock() - start_time)/ (double) CLOCKS_PER_SEC < sec) {
-        int itermax = 100;
-        while((clock() - start_time)/ (double) CLOCKS_PER_SEC < sec) {
+        int itermax = 1000;
+        while(itermax--) {
             iter_cnt++;
             OthelloState state = root_state;
             roxanne::Node* node = &root_node;
@@ -29,7 +30,13 @@ int roxanne::UCT(OthelloState root_state, clock_t start_time, int sec) {
                 ULL moves = state.get_valid_move_bit();
 
                 if (state.bit_count(moves) > 0) {
-                    int m = roxanne::roxanne_choice(moves);
+                    int m;
+                    if(state.bit_count(state.board_empty) > 50) {
+                        m = roxanne::rand_one(moves);
+                    }
+                    else {
+                        m = roxanne::roxanne_choice(moves);
+                    }
                     state.DoMove(m);
                 }
                 else {
@@ -45,6 +52,16 @@ int roxanne::UCT(OthelloState root_state, clock_t start_time, int sec) {
                 node = node->parent;
             }
         }
+        double max_gap = 0;
+        for(auto x:root_node.children) {
+            if(last_score.count(x->move))
+                max_gap = max(max_gap, abs(x->wins/x->visits - last_score[x->move]));
+            else
+                max_gap = max(max_gap, abs(x->wins/x->visits));
+            last_score[x->move] = x->wins/x->visits;
+        }
+        if(max_gap < 1e-4) break;
+
     }
     cout << "search times: " << iter_cnt << endl;
     roxanne::Node* ret = root_node.children[0];
@@ -53,7 +70,6 @@ int roxanne::UCT(OthelloState root_state, clock_t start_time, int sec) {
         if (x->wins/x->visits > ret->wins/ret->visits) {
             ret = x;
         }
-
     }
     return ret->move;
 }

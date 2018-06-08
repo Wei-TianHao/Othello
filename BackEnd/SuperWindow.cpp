@@ -80,10 +80,10 @@ void SuperWindow::Restart()
     BackUp.clear();
     BackUpState.clear();
 
-    BackUp.resize(PieceSize * PieceSize);
-    BackUpState.resize(PieceSize * PieceSize);
+    BackUp.resize(PieceSize * PieceSize * 4);
+    BackUpState.resize(PieceSize * PieceSize * 4);
 
-    for(int i = 0; i < PieceSize * PieceSize; i++){
+    for(int i = 0; i < PieceSize * PieceSize * 2; i++){
         BackUp[i].resize(PieceSize);
         for(int j = 0; j < PieceSize; j++){
             BackUp[i][j].resize(PieceSize);
@@ -330,7 +330,7 @@ void SuperWindow::DropThisPiece(int row, int column)
     qSwap(Player, Enemy);
 
 
-    if(totalMove >= PieceSize * PieceSize - 4) {
+    if(state.is_end()) {
         saveResult();
         delay(5000);
         Restart();
