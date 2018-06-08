@@ -21,10 +21,12 @@ SuperWindow::SuperWindow(QWidget *parent) :
     ui->BlackAI->addItem("human", HUMAN);
     ui->BlackAI->addItem("naive", NAIVE);
     ui->BlackAI->addItem("cooper", COOPER);
+    ui->BlackAI->addItem("roxanne", ROXANNE);
 
     ui->WhiteAI->addItem("human", HUMAN);
     ui->WhiteAI->addItem("naive", NAIVE);
     ui->WhiteAI->addItem("cooper", COOPER);
+    ui->WhiteAI->addItem("roxanne", ROXANNE);
 
     /* Pieces[PieceSize][PieceSize] */
     Pieces.resize(PieceSize);
@@ -257,7 +259,7 @@ void SuperWindow::saveResult() {
     bp = (PlayerType)(ui->BlackAI->currentIndex());
     wp = (PlayerType)(ui->WhiteAI->currentIndex());
     
-    string ai_names[5] = {"human", "naive", "cooper"};
+    string ai_names[5] = {"human", "naive", "cooper", "roxanne"};
     int x = 0, y = 0, z = 0;
     string filename = ai_names[bp]+" vs "+ai_names[wp]+".txt";
     
@@ -279,10 +281,11 @@ void SuperWindow::saveResult() {
 }
 void SuperWindow::DropThisPiece(int row, int column)
 {
+    cout << "calling drop this piece" << endl;
     totalMove++;
     MaxBackUpMove = totalMove;
 
-    if(row == -1) {
+    if(column == -1) {
         BackUpState[totalMove] = BackUpState[totalMove-1];
         BackUp[totalMove] = BackUp[totalMove-1];
         state.skip();
@@ -400,10 +403,11 @@ void SuperWindow::AI()
     
     // TimeRecord->setHMS(0,0,0); //时间设为0
     // ui->Timer->display(TimeRecord->toString("mm:ss")); //显示00:00:00
-    
+    cout << "calling ai" << endl;
     int MaxRow = 0, MaxColumn = 0;
 
     state = BackUpState[totalMove];
+    cout << "loaded backup state" << endl;
     int m = -1;
     PlayerType pt, ept;
     if(Player == Black) {
@@ -416,7 +420,7 @@ void SuperWindow::AI()
     
     clock_t start_time;
     start_time = clock();
-    int time_limit = 60;
+    int time_limit = 2;
 
     if(pt == NAIVE) {
         m = naive::step(state, start_time, time_limit);
@@ -424,17 +428,21 @@ void SuperWindow::AI()
     else if(pt == COOPER) {
         m = cooper::step(state, start_time, time_limit);
     }
+    else if(pt == ROXANNE) {
+        m = roxanne::step(state, start_time, time_limit);
+    }
     else {
         return;
     }
-
+    cout << "got move" << endl;
     TimeRecord->setHMS(0, (clock()-start_time)/(double)CLOCKS_PER_SEC/60, (clock()-start_time)/(double)CLOCKS_PER_SEC);
     ui->Timer->display(TimeRecord->toString("mm:ss"));
 
     MaxRow = m / PieceSize;
     MaxColumn = m % PieceSize;
+    cout << "m row col: " << m << " " << MaxRow << " " << MaxColumn << endl;
 
-    if (MaxRow != -1) {
+    if (MaxColumn != -1) {
         for(int deltaY = -1; deltaY <= 1; deltaY++){
             for(int deltaX = -1; deltaX <= 1; deltaX++){
 

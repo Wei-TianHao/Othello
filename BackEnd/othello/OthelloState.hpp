@@ -165,8 +165,7 @@ public:
         t |= e & (t << offset);  // Up to six stones can be turned at once
         return blank & (t << offset);  // Only the blank squares can be started
     }
-
-    void GetAllMoves(set<int> &xy) {
+    ULL get_valid_move_bit(){
         //return legal moves
         ULL left_right_mask = 0x7e7e7e7e7e7e7e7eULL;  // Both most left-right edge are 0, else 1
         ULL top_bottom_mask = 0x00ffffffffffff00ULL;  // Both most top-bottom edge are 0, else 1
@@ -183,6 +182,10 @@ public:
         mobility |= search_offset_right(own, enemy, mask, 9ULL);  // Bottom Right
         mobility |= search_offset_right(own, enemy, top_bottom_mask, 8ULL);  // Bottom
         mobility |= search_offset_right(own, enemy, mask, 7ULL);  // Left bottom
+        return mobility;
+    }
+    void GetAllMoves(set<int> &xy) {
+        ULL mobility = get_valid_move_bit();
 
         xy.clear();
         for(int i = 0; i < sz; i++) {
@@ -239,6 +242,7 @@ public:
 
         return true;
     }
+    
     void skip() {
         last_player = !last_player;
     }

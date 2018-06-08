@@ -30,22 +30,22 @@ int cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
             time_rec[1] += clock() - tmp;
             // cout << "rollout" << endl;
             // Rollout
-            tmp = clock();
+//            tmp = clock();
             set<int> moves;
-            clock_t tt = clock();
+//            clock_t tt = clock();
             bool flag = !is_end(state);
-            time_rec[7] += clock() - tt;
+//            time_rec[7] += clock() - tt;
             while(flag) {
-                clock_t tt = clock();
+//                clock_t tt = clock();
                 get_all_moves(state, moves);
-                time_rec[5] += clock() - tt;
+//                time_rec[5] += clock() - tt;
                 if (moves.size() > 0) {
 
-                    clock_t tt = clock();
+//                    clock_t tt = clock();
                     int x = rand()%moves.size();
                     int m = *(next(std::begin(moves), x));
                     state.DoMove(m);
-                    time_rec[6] += clock() - tt;
+//                    time_rec[6] += clock() - tt;
                 }
                 else {
 //                    cout << "end? " << state.is_end() << endl;
@@ -55,16 +55,11 @@ int cooper::UCT(OthelloState root_state, clock_t start_time, int sec) {
                     state.GetAllMoves(moves);
 //                    cout << "cnt2 " << moves.size() << endl;
                 }
-                tt = clock();
+//                tt = clock();
                 flag = !is_end(state);
-                time_rec[7] += clock() - tt;
-                if(!flag) {
-//                    cout <<"========= one round =========" << endl;
-
-                }
-
+//                time_rec[7] += clock() - tt;
             }
-            time_rec[2] += clock() - tmp;
+//            time_rec[2] += clock() - tmp;
             // cout << "Update" << endl;
             // Update
             tmp = clock();
@@ -124,6 +119,7 @@ double cooper::GetResult(OthelloState state) {
 
 
 bool cooper::is_end(OthelloState &state) {
+    return state.is_end();
     PULL key = make_pair(state.board_empty, state.board);
     auto search = cooper::end_map.find(key);
     if(search == cooper::end_map.end()) {

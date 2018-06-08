@@ -13,6 +13,7 @@
 #include "othello/OthelloState.hpp"
 #include "othello/naive.hpp"
 #include "othello/cooper.hpp"
+#include "othello/roxanne.hpp"
 #include <iostream>
 #include <cstdio>
 #include <stdio.h>
@@ -27,6 +28,7 @@ typedef enum {
     HUMAN,
     NAIVE,
     COOPER,
+    ROXANNE,
 } PlayerType;
 
 namespace Ui {

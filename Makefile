@@ -55,7 +55,8 @@ SOURCES       = BackEnd/othello/naive.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
 		BackEnd/SuperWindow.cpp \
-		BackEnd/othello/cooper.cc qrc_image.cpp \
+		BackEnd/othello/cooper.cc \
+		BackEnd/othello/roxanne.cc qrc_image.cpp \
 		moc_Piece.cpp \
 		moc_SuperWindow.cpp
 OBJECTS       = naive.o \
@@ -64,6 +65,7 @@ OBJECTS       = naive.o \
 		Piece.o \
 		SuperWindow.o \
 		cooper.o \
+		roxanne.o \
 		qrc_image.o \
 		moc_Piece.o \
 		moc_SuperWindow.o
@@ -257,12 +259,14 @@ DIST          = /usr/local/Cellar/qt/5.9.1/mkspecs/features/spec_pre.prf \
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/Piece.h \
 		BackEnd/SuperWindow.h \
-		BackEnd/othello/cooper.hpp BackEnd/othello/naive.cc \
+		BackEnd/othello/cooper.hpp \
+		BackEnd/othello/roxanne.hpp BackEnd/othello/naive.cc \
 		BackEnd/othello/OthelloState.cc \
 		BackEnd/main.cpp \
 		BackEnd/Piece.cpp \
 		BackEnd/SuperWindow.cpp \
-		BackEnd/othello/cooper.cc
+		BackEnd/othello/cooper.cc \
+		BackEnd/othello/roxanne.cc
 QMAKE_TARGET  = Qt-Reversi
 DESTDIR       = 
 TARGET        = Qt-Reversi.app/Contents/MacOS/Qt-Reversi
@@ -694,8 +698,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents Images/image.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/5.9.1/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/Piece.h BackEnd/SuperWindow.h BackEnd/othello/cooper.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp BackEnd/othello/cooper.cc $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/naive.hpp BackEnd/othello/OthelloState.hpp BackEnd/Piece.h BackEnd/SuperWindow.h BackEnd/othello/cooper.hpp BackEnd/othello/roxanne.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents BackEnd/othello/naive.cc BackEnd/othello/OthelloState.cc BackEnd/main.cpp BackEnd/Piece.cpp BackEnd/SuperWindow.cpp BackEnd/othello/cooper.cc BackEnd/othello/roxanne.cc $(DISTDIR)/
 	$(COPY_FILE) --parents FrontEnd/SuperWindow.ui $(DISTDIR)/
 
 
@@ -938,6 +942,7 @@ moc_SuperWindow.cpp: /usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
+		BackEnd/othello/roxanne.hpp \
 		BackEnd/SuperWindow.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/5.9.1/bin/moc
@@ -1163,6 +1168,7 @@ main.o: BackEnd/main.cpp BackEnd/SuperWindow.h \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
+		BackEnd/othello/roxanne.hpp \
 		/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/QApplication \
 		/usr/local/Cellar/qt/5.9.1/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o BackEnd/main.cpp
@@ -1365,6 +1371,7 @@ SuperWindow.o: BackEnd/SuperWindow.cpp BackEnd/SuperWindow.h \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/repetition/enum_params.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma_if.hpp \
 		/usr/local/Cellar/boost/1.63.0/include/boost/preprocessor/punctuation/comma.hpp \
+		BackEnd/othello/roxanne.hpp \
 		ui_SuperWindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SuperWindow.o BackEnd/SuperWindow.cpp
 
@@ -1538,6 +1545,11 @@ cooper.o: BackEnd/othello/cooper.cc BackEnd/othello/cooper.hpp \
 		BackEnd/othello/OthelloState.hpp \
 		BackEnd/othello/rng.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cooper.o BackEnd/othello/cooper.cc
+
+roxanne.o: BackEnd/othello/roxanne.cc BackEnd/othello/roxanne.hpp \
+		BackEnd/othello/OthelloState.hpp \
+		BackEnd/othello/rng.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o roxanne.o BackEnd/othello/roxanne.cc
 
 qrc_image.o: qrc_image.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_image.o qrc_image.cpp
