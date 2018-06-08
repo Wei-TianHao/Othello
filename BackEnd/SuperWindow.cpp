@@ -22,11 +22,13 @@ SuperWindow::SuperWindow(QWidget *parent) :
     ui->BlackAI->addItem("naive", NAIVE);
     ui->BlackAI->addItem("cooper", COOPER);
     ui->BlackAI->addItem("roxanne", ROXANNE);
+    ui->BlackAI->addItem("lethe", LETHE);
 
     ui->WhiteAI->addItem("human", HUMAN);
     ui->WhiteAI->addItem("naive", NAIVE);
     ui->WhiteAI->addItem("cooper", COOPER);
     ui->WhiteAI->addItem("roxanne", ROXANNE);
+    ui->WhiteAI->addItem("lethe", LETHE);
 
     /* Pieces[PieceSize][PieceSize] */
     Pieces.resize(PieceSize);
@@ -259,7 +261,7 @@ void SuperWindow::saveResult() {
     bp = (PlayerType)(ui->BlackAI->currentIndex());
     wp = (PlayerType)(ui->WhiteAI->currentIndex());
     
-    string ai_names[5] = {"human", "naive", "cooper", "roxanne"};
+    string ai_names[10] = {"human", "naive", "cooper", "roxanne", "lethe"};
     int x = 0, y = 0, z = 0;
     string filename = ai_names[bp]+" vs "+ai_names[wp]+".txt";
     
@@ -430,6 +432,9 @@ void SuperWindow::AI()
     }
     else if(pt == ROXANNE) {
         m = roxanne::step(state, start_time, time_limit);
+    }
+    else if(pt == LETHE) {
+        m = lethe::step(state, start_time, time_limit);
     }
     else {
         return;

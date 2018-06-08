@@ -3,15 +3,19 @@
 #include "OthelloState.hpp"
 #include "naive.hpp"
 #include "cooper.hpp"
+#include "roxanne.hpp"
+#include "lethe.hpp"
 
 using namespace std;
 #define ULL unsigned long long
 int main(int argc,char **argv) {
     
-    string board = argv[1];
-    string player = argv[2];
-    string version = argv[3];
-
+    string board;
+    string player;
+    string version;
+    cin >> board;
+    cin >> player;
+    cin >> version;
     // cout << board <<endl;
     // cout << player <<endl;
     // cout << version <<endl;
@@ -33,6 +37,7 @@ int main(int argc,char **argv) {
     else
         last_player = false;
 
+    
     OthelloState state = OthelloState(sz, emp, ply, last_player);
     int m;
     clock_t start_time = clock();
@@ -42,7 +47,12 @@ int main(int argc,char **argv) {
     }
     else if(version == "cooper") {
         m = cooper::step(state, start_time, time_limit);
-
+    }
+    else if(version == "roxanne") {
+        m = roxanne::step(state, start_time, time_limit);
+    }
+    else if(version == "lethe") {
+        m = lethe::step(state, start_time, time_limit);
     }
     // state.DoMove(m.first, m.second);
     // state.ShowBoard();
